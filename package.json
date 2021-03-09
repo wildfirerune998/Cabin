@@ -1,0 +1,160 @@
+{
+	"name": "Cabin",
+	"author": "Hel",
+	"version": "1.1.0",
+	"keywords": [
+		"pebble-app"
+	],
+	"private": true,
+	"dependencies": {
+		"pebble-clay": "^1.0.4"
+	},
+	"pebble": {
+		"displayName": "Cabin",
+		"uuid": "218ead1b-6d45-46eb-9dd5-651e78aa6d70",
+		"sdkVersion": "3",
+		"enableMultiJS": true,
+		"targetPlatforms": [
+			"aplite",
+			"basalt",
+			"diorite",
+			"chalk"
+		],
+		"watchapp": {
+			"watchface": true
+		},
+		"messageKeys": {
+			"TEMPERATURE": 0,
+			"CONDITIONS": 1,
+			"SUNRISE": 2,
+			"SUNSET": 3,
+			"API": 4,
+			"METRIC": 5,
+			"READY": 6,
+			"WEATHER": 7
+		},
+		"capabilities": [
+			"location",
+			"configurable"
+		],
+		"resources": {
+			"media": [
+				{
+					"file": "images/loading.png",
+					"name": "LOADING",
+					"type": "bitmap"
+				},
+				{
+					"file": "images/basic_bg.png",
+					"name": "BASIC_BG",
+					"type": "bitmap"
+				},
+				{
+					"file": "images/night.png",
+					"name": "NIGHT",
+					"type": "bitmap"
+				},
+				{
+					"file": "images/clouds-night.png",
+					"name": "CLOUDSNIGHT",
+					"type": "bitmap"
+				},
+				{
+					"file": "images/day.png",
+					"name": "DAY",
+					"type": "bitmap"
+				},
+				{
+					"file": "images/rain.png",
+					"name": "RAIN",
+					"type": "bitmap"
+				},
+				{
+					"file": "images/snow.png",
+					"name": "SNOW",
+					"type": "bitmap"
+				},
+				{
+					"file": "images/clouds.png",
+					"name": "CLOUDS",
+					"type": "bitmap"
+				},
+				{
+					"file": "images/clouds_bw.png",
+					"name": "CLOUDS_BW",
+					"type": "bitmap"
+				},
+				{
+					"file": "images/basic_bg_round.png",
+					"name": "BASIC_BG_ROUND",
+					"type": "bitmap"
+				},
+				{
+					"file": "images/loading_round.png",
+					"name": "LOADING_ROUND",
+					"type": "bitmap"
+				},
+				{
+					"file": "images/night_round.png",
+					"name": "NIGHT_ROUND",
+					"type": "bitmap"
+				},
+				{
+					"file": "images/night_round.png",
+					"name": "NIGHT_BW",
+					"type": "bitmap"
+				},
+				{
+					"file": "images/clouds-night_round.png",
+					"name": "CLOUDSNIGHT_ROUND",
+					"type": "bitmap"
+				},
+				{
+					"file": "images/clouds-night_bw.png",
+					"name": "CLOUDSNIGHT_BW",
+					"type": "bitmap"
+				},
+				{
+					"file": "images/day_round.png",
+					"name": "DAY_ROUND",
+					"type": "bitmap"
+				},
+				{
+					"file": "images/day_round.png",
+					"name": "DAY_BW",
+					"type": "bitmap"
+				},
+				{
+					"file": "images/rain_round.png",
+					"name": "RAIN_ROUND",
+					"type": "bitmap"
+				},
+				{
+					"file": "images/snow_round.png",
+					"name": "SNOW_ROUND",
+					"type": "bitmap"
+				},
+				{
+					"file": "images/snow_round.png",
+					"name": "SNOW_BW",
+					"type": "bitmap"
+				},
+				{
+					"file": "images/clouds_round.png",
+					"name": "CLOUDS_ROUND",
+					"type": "bitmap"
+				},
+				{
+					"file": "images/thunderstorms.png",
+					"name": "THUNDERSTORMS",
+					"type": "bitmap"
+				},
+				{
+					"file": "images/thunderstorms_round.png",
+					"name": "THUNDERSTORMS_ROUND",
+					"type": "bitmap"
+				}
+			]
+		}
+	}
+}
