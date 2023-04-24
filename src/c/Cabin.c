@@ -63,7 +63,7 @@ static void get_settings() {
   APP_LOG(APP_LOG_LEVEL_ERROR, "get_settings settings.api: %s", settings.api);
   APP_LOG(APP_LOG_LEVEL_ERROR, "get_settings settings.weather: %s", settings.weather);
 }
-static void send_settings_update_weather(int first_run){
+static void send_settings_update_weather(){
 
   APP_LOG(APP_LOG_LEVEL_INFO, "in send_settings_update_weather");
   // Begin dictionary
@@ -75,28 +75,17 @@ static void send_settings_update_weather(int first_run){
   if(result == APP_MSG_OK) {
 
     //APP_LOG(APP_LOG_LEVEL_ERROR, "result == APP_MSG_OK");
-
-    // This is to pull the settings info from cache and push it to the index.js
-    //      Afterwards, we don't have to have it bi-laterally synced every 30min
-    // 1 - first time run, only the ready signal. 
-    //     This is so we don't keep sending the api/metric vars back and forth. Any changes will be done via Clay page and sent to the JS
-    //     we'll then get the update. tldr: First time run, source of these values is C, afterwards it's the JS
-    // 0 - means subsequent runs. the index.js already knows what's what, and will work with what it has
-    //     Changing the settings will trigger an update on the index.js side and then will be sent here
-    //APP_LOG(APP_LOG_LEVEL_ERROR, "run type?: %d", first_run);
-    if (first_run){
-      //Only send anything if we want to. The user could opt out of weather altogether
-
-      dict_write_cstring(iter, MESSAGE_KEY_WEATHER, settings.weather);
-      dict_write_cstring(iter, MESSAGE_KEY_API, settings.api);
-      dict_write_cstring(iter, MESSAGE_KEY_METRIC, settings.metric);
-    }
+    dict_write_cstring(iter, MESSAGE_KEY_WEATHER, settings.weather);
+    dict_write_cstring(iter, MESSAGE_KEY_API, settings.api);
+    dict_write_cstring(iter, MESSAGE_KEY_METRIC, settings.metric);
   
     // Send this message
     result = app_message_outbox_send();
 
-    // Check the resultW
-    if(result != APP_MSG_OK) {
+    // Check the result
+    if(result == APP_MSG_OK) {
+      update_weather(iter);
+    } else {
       APP_LOG(APP_LOG_LEVEL_ERROR, "Error sending the outbox: %d", (int)result);
     }
 
@@ -104,7 +93,9 @@ static void send_settings_update_weather(int first_run){
     // The outbox cannot be used right now
     APP_LOG(APP_LOG_LEVEL_ERROR, "Error preparing the outbox: %d", (int)result);
   }
+  
 }
+
 static void update_time() {
   // Get a tm structure
   time_t temp = time(NULL); 
@@ -118,10 +109,10 @@ static void update_time() {
   text_layer_set_text(s_time_layer, s_buffer);
 
 }
+
 static void accel_tap_handler(AccelAxisType axis, int32_t direction) {
   // We're going to overwrite the temp layer and display the date instead if they flicked once
   // then go back if they flick again
-
 
   if (date){
     // This is the second flick
@@ -149,6 +140,7 @@ static void accel_tap_handler(AccelAxisType axis, int32_t direction) {
   }
   
 }
+
 static void update_bg(char Weather){
 
   //Weather = 'Q'; //MANUAL SET for testing various conditions
@@ -265,11 +257,10 @@ static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
 
     APP_LOG(APP_LOG_LEVEL_INFO, "tick_handler 30min");
 
-    // 1 - first time run
-    // 0 - means subsequent runs
-    send_settings_update_weather(0);
+    send_settings_update_weather();
   }
 }
+
 // BEGIN Weather shenanigans
 static void update_weather(DictionaryIterator *iterator) {
   // Store incoming information
@@ -414,22 +405,8 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
   // was this just a ready signal or a "GIVE ME WEATHER I"M HUNGRY NOW!" sign
   Tuple *ready_tuple = dict_find(iterator, READY);
 
-  if (ready_tuple) {
-    
-    //APP_LOG(APP_LOG_LEVEL_ERROR, "We got the ready signal, give it the api info");
-    // This is just a ready signal, We'll go back to the JS program
-    // and give it the API information
-    // THIS ONLY HAS TO BE DONE ONCE!!! This is to pull the settings info from cache and push it to the index.js
-    //      Afterwards, we don't have to have it bi-laterally synced every 30min
-    // 1 - first time run, only the ready signal. 
-    //     This is so we don't keep sending the api/metric vars back and forth
-    // 0 - means subsequent runs. the index.js already knows what's what, and will work with what it has
-    //     Changing the settings will trigger an update on the index.js side and then will be sent here
-    send_settings_update_weather(1);
-  } else {
-    // otherwise, this is just a weather update for you
-    update_weather(iterator);
-  }
+  send_settings_update_weather();
+ 
 }
 
 static void inbox_dropped_callback(AppMessageResult reason, void *context) {
