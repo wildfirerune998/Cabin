@@ -153,6 +153,31 @@
 					"file": "images/thunderstorms_round.png",
 					"name": "THUNDERSTORMS_ROUND",
 					"type": "bitmap"
+				},
+				{
+					"file": "images/tornado.png",
+					"name": "TORNADO",
+					"type": "bitmap"
+				},
+				{
+					"file": "images/tornado_round.png",
+					"name": "TORNADO_ROUND",
+					"type": "bitmap"
+				},
+				{
+					"file": "images/haze.png",
+					"name": "HAZE",
+					"type": "bitmap"
+				},
+				{
+					"file": "images/haze_round.png",
+					"name": "HAZE_ROUND",
+					"type": "bitmap"
+				},
+				{
+					"file": "images/haze_bw.png",
+					"name": "HAZE_BW",
+					"type": "bitmap"
 				}
 			]
 		}

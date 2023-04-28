@@ -8,7 +8,7 @@
 #define API 4
 #define METRIC 5
 #define READY 6
-#define WEATHER 7
+//#define WEATHER 7
 #define TRUE 1
 #define FALSE 0
 
@@ -41,7 +41,6 @@ int tick_counter;
 static void default_settings() {
   snprintf(settings.metric, sizeof(settings.metric), "%s", "FALSE");
   snprintf(settings.api, sizeof(settings.api), "%s", "");
-  snprintf(settings.weather, sizeof(settings.weather), "%s", "FALSE");
   APP_LOG(APP_LOG_LEVEL_ERROR, "default_settings settings.metric: %s", settings.metric);
   APP_LOG(APP_LOG_LEVEL_ERROR, "default_settings settings.api: %s", settings.api);
   APP_LOG(APP_LOG_LEVEL_ERROR, "default_settings settings.weather: %s", settings.weather);
@@ -75,17 +74,17 @@ static void send_settings_update_weather(){
   if(result == APP_MSG_OK) {
 
     //APP_LOG(APP_LOG_LEVEL_ERROR, "result == APP_MSG_OK");
+
+    // This is to pull the settings info from cache and push it to the index.js 
     dict_write_cstring(iter, MESSAGE_KEY_WEATHER, settings.weather);
     dict_write_cstring(iter, MESSAGE_KEY_API, settings.api);
     dict_write_cstring(iter, MESSAGE_KEY_METRIC, settings.metric);
-  
+   
     // Send this message
     result = app_message_outbox_send();
 
-    // Check the result
-    if(result == APP_MSG_OK) {
-      update_weather(iter);
-    } else {
+    // Check the resultW
+    if(result != APP_MSG_OK) {
       APP_LOG(APP_LOG_LEVEL_ERROR, "Error sending the outbox: %d", (int)result);
     }
 
@@ -93,9 +92,7 @@ static void send_settings_update_weather(){
     // The outbox cannot be used right now
     APP_LOG(APP_LOG_LEVEL_ERROR, "Error preparing the outbox: %d", (int)result);
   }
-  
 }
-
 static void update_time() {
   // Get a tm structure
   time_t temp = time(NULL); 
@@ -109,10 +106,10 @@ static void update_time() {
   text_layer_set_text(s_time_layer, s_buffer);
 
 }
-
 static void accel_tap_handler(AccelAxisType axis, int32_t direction) {
   // We're going to overwrite the temp layer and display the date instead if they flicked once
   // then go back if they flick again
+
 
   if (date){
     // This is the second flick
@@ -140,10 +137,9 @@ static void accel_tap_handler(AccelAxisType axis, int32_t direction) {
   }
   
 }
-
 static void update_bg(char Weather){
 
-  //Weather = 'Q'; //MANUAL SET for testing various conditions
+  //Weather = 'F'; //MANUAL SET for testing various conditions
   APP_LOG(APP_LOG_LEVEL_ERROR, "update_bg Weather %c", Weather);
   PBL_IF_COLOR_ELSE(APP_LOG(APP_LOG_LEVEL_ERROR, "COLOR"), APP_LOG(APP_LOG_LEVEL_ERROR, "BW"));
   gbitmap_destroy(s_bitmap);
@@ -185,6 +181,16 @@ static void update_bg(char Weather){
       s_bitmap = PBL_IF_COLOR_ELSE(PBL_IF_ROUND_ELSE(gbitmap_create_with_resource(RESOURCE_ID_SNOW_ROUND), 
                                                      gbitmap_create_with_resource(RESOURCE_ID_SNOW)), 
                                    gbitmap_create_with_resource(RESOURCE_ID_SNOW_BW));
+      break;
+    case 'F' : //FUZZY
+      s_bitmap = PBL_IF_COLOR_ELSE(PBL_IF_ROUND_ELSE(gbitmap_create_with_resource(RESOURCE_ID_HAZE_ROUND), 
+                                                     gbitmap_create_with_resource(RESOURCE_ID_HAZE)), 
+                                   gbitmap_create_with_resource(RESOURCE_ID_HAZE_BW));
+      break;
+    case 'O' : //TORNADO
+      s_bitmap = PBL_IF_COLOR_ELSE(PBL_IF_ROUND_ELSE(gbitmap_create_with_resource(RESOURCE_ID_TORNADO_ROUND), 
+                                                     gbitmap_create_with_resource(RESOURCE_ID_TORNADO)), 
+                                   gbitmap_create_with_resource(RESOURCE_ID_TORNADO));
       break;
     default : //DEFAULT
       s_bitmap = PBL_IF_ROUND_ELSE(gbitmap_create_with_resource(RESOURCE_ID_BASIC_BG_ROUND), 
@@ -260,7 +266,6 @@ static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
     send_settings_update_weather();
   }
 }
-
 // BEGIN Weather shenanigans
 static void update_weather(DictionaryIterator *iterator) {
   // Store incoming information
@@ -281,111 +286,111 @@ static void update_weather(DictionaryIterator *iterator) {
   Tuple *sunset_tuple = dict_find(iterator, SUNSET);
   Tuple *api_tuple = dict_find(iterator, API);
   Tuple *metric_tuple = dict_find(iterator, METRIC);
-  Tuple *weather_tuple = dict_find(iterator, WEATHER);
+
+  if (api_tuple){
+    snprintf(settings.api, sizeof(settings.api), "%s", api_tuple->value->cstring);
+  } 
+
   
-  // Only do these weather shenanigans if the user wants the info
-  // otherwise we'll update the background to a plain one
-  if (weather_tuple) {
-    
-    APP_LOG(APP_LOG_LEVEL_ERROR, "weather_tuple %s", weather_tuple->value->cstring);
-    snprintf(settings.weather, sizeof(settings.weather), "%s", weather_tuple->value->cstring);
-    APP_LOG(APP_LOG_LEVEL_ERROR, "settings.weather %s", settings.weather);
+  //Save these settings
+  APP_LOG(APP_LOG_LEVEL_ERROR, "metric_tuple %s", metric_tuple->value->cstring);
+  if (metric_tuple){
+    snprintf(settings.metric, sizeof(settings.metric), "%s", metric_tuple->value->cstring);
+  } 
+  APP_LOG(APP_LOG_LEVEL_ERROR, "settings.metric %s", settings.metric);
 
-    if (api_tuple){
-      snprintf(settings.api, sizeof(settings.api), "%s", api_tuple->value->cstring);
-    } 
-
-    
-    //Save these settings
-    APP_LOG(APP_LOG_LEVEL_ERROR, "metric_tuple %s", metric_tuple->value->cstring);
-    if (metric_tuple){
-      snprintf(settings.metric, sizeof(settings.metric), "%s", metric_tuple->value->cstring);
-    } 
-    APP_LOG(APP_LOG_LEVEL_ERROR, "settings.metric %s", settings.metric);
-
-    // We're done looking at the settings returned. let's save it for future use.
-    //HEL TO DO, does this get over written when nothing is returned for those values?
-    save_settings();
-    // If temp is available, use it. We may not have the conditions, but at least show the temp
-    if (temp_tuple) {
-      snprintf(temperature_buffer, sizeof(temperature_buffer), "%d", (int)temp_tuple->value->int32);
-    }
-
-    if (conditions_tuple) {
-      snprintf(conditions_buffer, sizeof(conditions_buffer), "%s", conditions_tuple->value->cstring);
-      APP_LOG(APP_LOG_LEVEL_ERROR, "inbox_received_callback conditions_buffer %s", conditions_buffer);  
-    }
-
-    if (sunrise_tuple) {
-      snprintf(sunrise_buffer, sizeof(sunrise_buffer), "%d", (int)sunrise_tuple->value->int32);
-      sunrise_time =  (int)sunrise_tuple->value->int32;
-    }
-    if (sunset_tuple) {
-      snprintf(sunset_buffer, sizeof(sunset_buffer), "%d", (int)sunset_tuple->value->int32);
-      sunset_time =  (int)sunset_tuple->value->int32;
-    }
-
-    current_time = (int)time(NULL);
-
-    //If we're day, but the conditions didn't return correctly we'll have a blank screen
-    if (sunrise_time < current_time && current_time < sunset_time){
-
-      // string search conditions_buffer for key words, but only if there's a value...
-      if (strlen(conditions_buffer)>0){
-        //Rain
-        if ((strstr(conditions_buffer,"Rain")) != NULL){  
-          conditions_switch = 'R';
-        }  
-        //ThunderStorms 
-        if ((strstr(conditions_buffer,"ThunderStorms")) != NULL){
-          conditions_switch = 'T';
-        }
-        //Snow
-        if ((strstr(conditions_buffer,"Snow")) != NULL){
-          conditions_switch = 'S';
-        }
-        //Clear -- It's set to "Day" for now, but it will be a separate value without clouds in the future
-        if ((strstr(conditions_buffer,"Clear")) != NULL){
-          conditions_switch = 'D';
-        }
-        //Clouds -- It's set to "Day" for now, but it will be a separate value with more clouds in the future
-        if ((strstr(conditions_buffer,"Clouds")) != NULL){
-          conditions_switch = 'C';
-        }
-        if (!conditions_switch) {
-          //We didn't have anything, but we had a value for conditions
-          // This would only happen if OpenWeather added a new MAIN value in the json
-          // let's just default to Day, since we know that much
-          conditions_switch = 'D';
-        }
-      // We don't know the conditions, but we know it'a day. We'll just show day.
-      } else {
-        conditions_switch = 'D';
-      }
-    // NIGHT TIME!
-    } else {
-      // if the time is not during the day we'll check to see if the night is clear or not. 
-      // If it's NOT clear, it will be snowy/rainy/cloudy which CANNOT be differentiated in the dark
-      // Trust me, I looked. I can only tell when the sky is clear or not clear by the moon 
-      //    and whether I'm getting rained on
-      // so we'll show the same image for all except for clear
-     
-      if ((strstr(conditions_buffer,"Clear")) != NULL){
-        APP_LOG(APP_LOG_LEVEL_ERROR, "CLEAR NIGHT"); 
-        conditions_switch = 'N';
-      } else {
-        APP_LOG(APP_LOG_LEVEL_ERROR, "NOT CLEAR NIGHT"); 
-        conditions_switch = 'Q';
-      }
-    }
-  } else {
-    // if they don't want weather info, OR there was an error, we'll just have a default blue background
-    conditions_switch = 'X'; 
+  // We're done looking at the settings returned. let's save it for future use.
+  //HEL TO DO, does this get over written when nothing is returned for those values?
+  save_settings();
+  // If temp is available, use it. We may not have the conditions, but at least show the temp
+  if (temp_tuple) {
+    snprintf(temperature_buffer, sizeof(temperature_buffer), "%d", (int)temp_tuple->value->int32);
   }
 
-  // Just to be completely clear, if the user doesn't want weather, we'll force it here...again!
-  if (strstr(settings.weather,"FALSE") != NULL) {
-    conditions_switch = 'X';   
+  if (conditions_tuple) {
+    snprintf(conditions_buffer, sizeof(conditions_buffer), "%s", conditions_tuple->value->cstring);
+    APP_LOG(APP_LOG_LEVEL_ERROR, "inbox_received_callback conditions_buffer %s", conditions_buffer);  
+  }
+
+  if (sunrise_tuple) {
+    snprintf(sunrise_buffer, sizeof(sunrise_buffer), "%d", (int)sunrise_tuple->value->int32);
+    sunrise_time =  (int)sunrise_tuple->value->int32;
+  }
+  if (sunset_tuple) {
+    snprintf(sunset_buffer, sizeof(sunset_buffer), "%d", (int)sunset_tuple->value->int32);
+    sunset_time =  (int)sunset_tuple->value->int32;
+  }
+
+  current_time = (int)time(NULL);
+
+  //If we're day, but the conditions didn't return correctly we'll have a blank screen
+  if (sunrise_time < current_time && current_time < sunset_time){
+
+    // string search conditions_buffer for key words, but only if there's a value...
+    if (strlen(conditions_buffer)>0){
+      //Rain
+      if ((strstr(conditions_buffer,"Rain")) != NULL){  
+        conditions_switch = 'R';
+      }  
+      //ThunderStorms 
+      if ((strstr(conditions_buffer,"ThunderStorms")) != NULL){
+        conditions_switch = 'T';
+      }
+      //Snow
+      if ((strstr(conditions_buffer,"Snow")) != NULL){
+        conditions_switch = 'S';
+      }
+      //Clear
+      if ((strstr(conditions_buffer,"Clear")) != NULL){
+        conditions_switch = 'D';
+      }
+      //Clouds
+      if ((strstr(conditions_buffer,"Clouds")) != NULL){
+        conditions_switch = 'C';
+      }
+      //Fuzzy Atmosphere
+      if (((strstr(conditions_buffer,"Mist")) != NULL)
+          || ((strstr(conditions_buffer,"Smoke")) != NULL)
+          || ((strstr(conditions_buffer,"Haze")) != NULL)
+          || ((strstr(conditions_buffer,"Dust")) != NULL)
+          || ((strstr(conditions_buffer,"Fog")) != NULL)
+          || ((strstr(conditions_buffer,"Sand")) != NULL)
+          || ((strstr(conditions_buffer,"Dust")) != NULL)
+          || ((strstr(conditions_buffer,"Ash")) != NULL)
+          || ((strstr(conditions_buffer,"Squal")) != NULL))
+      {
+        conditions_switch = 'F';
+      }
+      //Tornado
+      if ((strstr(conditions_buffer,"Tornado")) != NULL)
+      {
+        conditions_switch = 'O';
+      }
+      if (!conditions_switch) {
+        //We didn't have anything, but we had a value for conditions
+        // This would only happen if OpenWeather added a new MAIN value in the json
+        // let's just default to Day, since we know that much
+        conditions_switch = 'D';
+      }
+    // We don't know the conditions, but we know it'a day. We'll just show day.
+    } else {
+      conditions_switch = 'D';
+    }
+  // NIGHT TIME!
+  } else {
+    // if the time is not during the day we'll check to see if the night is clear or not. 
+    // If it's NOT clear, it will be snowy/rainy/cloudy which CANNOT be differentiated in the dark
+    // Trust me, I looked. I can only tell when the sky is clear or not clear by the moon 
+    //    and whether I'm getting rained on
+    // so we'll show the same image for all except for clear
+    
+    if ((strstr(conditions_buffer,"Clear")) != NULL){
+      APP_LOG(APP_LOG_LEVEL_ERROR, "CLEAR NIGHT"); 
+      conditions_switch = 'N';
+    } else {
+      APP_LOG(APP_LOG_LEVEL_ERROR, "NOT CLEAR NIGHT"); 
+      conditions_switch = 'Q';
+    }
   }
   
   update_bg(conditions_switch);
@@ -405,8 +410,16 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
   // was this just a ready signal or a "GIVE ME WEATHER I"M HUNGRY NOW!" sign
   Tuple *ready_tuple = dict_find(iterator, READY);
 
-  send_settings_update_weather();
- 
+  if (ready_tuple) {
+    
+    //APP_LOG(APP_LOG_LEVEL_ERROR, "We got the ready signal, give it the api info");
+    // This is just a ready signal, We'll go back to the JS program
+    // and give it the API information
+    send_settings_update_weather();
+  } else {
+    // otherwise, this is just a weather update for you
+    update_weather(iterator);
+  }
 }
 
 static void inbox_dropped_callback(AppMessageResult reason, void *context) {

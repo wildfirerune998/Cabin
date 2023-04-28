@@ -1,0 +1,10 @@
+{
+    "API": 4,
+    "CONDITIONS": 1,
+    "METRIC": 5,
+    "READY": 6,
+    "SUNRISE": 2,
+    "SUNSET": 3,
+    "TEMPERATURE": 0,
+    "WEATHER": 7
+}
