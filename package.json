@@ -175,9 +175,34 @@
 					"type": "bitmap"
 				},
 				{
-					"file": "images/haze_bw.png",
-					"name": "HAZE_BW",
-					"type": "bitmap"
+				  "file": "images/haze_bw.png",
+				  "name": "HAZE_BW",
+				  "type": "bitmap"
+				},
+				{
+				  "file": "images/sunset.png",
+				  "name": "SUNSET",
+				  "type": "bitmap"
+				},
+				{
+				  "file": "images/sunset_round.png",
+				  "name": "SUNSET_ROUND",
+				  "type": "bitmap"
+				},
+				{
+				  "file": "images/sunset_bw.png",
+				  "name": "SUNSET_BW",
+				  "type": "bitmap"
+				},
+				{
+				  "file": "images/sunrise.png",
+				  "name": "SUNRISE",
+				  "type": "bitmap"
+				},
+				{
+				  "file": "images/sunrise_round.png",
+				  "name": "SUNRISE_ROUND",
+				  "type": "bitmap"
 				}
 			]
 		}

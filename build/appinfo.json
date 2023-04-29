@@ -181,6 +181,31 @@
                 "type": "bitmap", 
                 "name": "HAZE_BW", 
                 "file": "images/haze_bw.png"
+            }, 
+            {
+                "type": "bitmap", 
+                "name": "SUNSET", 
+                "file": "images/sunset.png"
+            }, 
+            {
+                "type": "bitmap", 
+                "name": "SUNSET_ROUND", 
+                "file": "images/sunset_round.png"
+            }, 
+            {
+                "type": "bitmap", 
+                "name": "SUNSET_BW", 
+                "file": "images/sunset_bw.png"
+            }, 
+            {
+                "type": "bitmap", 
+                "name": "SUNRISE", 
+                "file": "images/sunrise.png"
+            }, 
+            {
+                "type": "bitmap", 
+                "name": "SUNRISE_ROUND", 
+                "file": "images/sunrise_round.png"
             }
         ]
     }, 

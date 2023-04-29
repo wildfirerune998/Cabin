@@ -8,7 +8,6 @@
 #define API 4
 #define METRIC 5
 #define READY 6
-//#define WEATHER 7
 #define TRUE 1
 #define FALSE 0
 
@@ -17,7 +16,6 @@
 
 // Define our settings struct
 typedef struct ClaySettings {
-  char weather[25];
   char metric[25];
   char api[255];
 } ClaySettings;
@@ -43,14 +41,12 @@ static void default_settings() {
   snprintf(settings.api, sizeof(settings.api), "%s", "");
   APP_LOG(APP_LOG_LEVEL_ERROR, "default_settings settings.metric: %s", settings.metric);
   APP_LOG(APP_LOG_LEVEL_ERROR, "default_settings settings.api: %s", settings.api);
-  APP_LOG(APP_LOG_LEVEL_ERROR, "default_settings settings.weather: %s", settings.weather);
 }
 
 // Save the settings to persistent storage
 static void save_settings() {
   APP_LOG(APP_LOG_LEVEL_ERROR, "save_settings settings.metric: %s", settings.metric);
   APP_LOG(APP_LOG_LEVEL_ERROR, "save_settings settings.api: %s", settings.api);
-  APP_LOG(APP_LOG_LEVEL_ERROR, "save_settings settings.weather: %s", settings.weather);
   persist_write_data(SETTINGS_KEY, &settings, sizeof(settings));
 }
 
@@ -60,7 +56,6 @@ static void get_settings() {
   persist_read_data(SETTINGS_KEY, &settings, sizeof(settings));
   APP_LOG(APP_LOG_LEVEL_ERROR, "get_settings settings.metric: %s", settings.metric);
   APP_LOG(APP_LOG_LEVEL_ERROR, "get_settings settings.api: %s", settings.api);
-  APP_LOG(APP_LOG_LEVEL_ERROR, "get_settings settings.weather: %s", settings.weather);
 }
 static void send_settings_update_weather(){
 
@@ -76,7 +71,6 @@ static void send_settings_update_weather(){
     //APP_LOG(APP_LOG_LEVEL_ERROR, "result == APP_MSG_OK");
 
     // This is to pull the settings info from cache and push it to the index.js 
-    dict_write_cstring(iter, MESSAGE_KEY_WEATHER, settings.weather);
     dict_write_cstring(iter, MESSAGE_KEY_API, settings.api);
     dict_write_cstring(iter, MESSAGE_KEY_METRIC, settings.metric);
    
@@ -192,6 +186,16 @@ static void update_bg(char Weather){
                                                      gbitmap_create_with_resource(RESOURCE_ID_TORNADO)), 
                                    gbitmap_create_with_resource(RESOURCE_ID_TORNADO));
       break;
+    case 'U' : //SUNRISE
+      s_bitmap = PBL_IF_COLOR_ELSE(PBL_IF_ROUND_ELSE(gbitmap_create_with_resource(RESOURCE_ID_SUNRISE_ROUND), 
+                                                     gbitmap_create_with_resource(RESOURCE_ID_SUNRISE)), 
+                                   gbitmap_create_with_resource(RESOURCE_ID_TORNADO));
+      break;
+    case 'E' : //SUNSET
+      s_bitmap = PBL_IF_COLOR_ELSE(PBL_IF_ROUND_ELSE(gbitmap_create_with_resource(RESOURCE_ID_SUNSET_ROUND), 
+                                                     gbitmap_create_with_resource(RESOURCE_ID_SUNSET)), 
+                                   gbitmap_create_with_resource(RESOURCE_ID_SUNSET_BW));
+      break;
     default : //DEFAULT
       s_bitmap = PBL_IF_ROUND_ELSE(gbitmap_create_with_resource(RESOURCE_ID_BASIC_BG_ROUND), 
                                    gbitmap_create_with_resource(RESOURCE_ID_BASIC_BG));
@@ -277,7 +281,7 @@ static void update_weather(DictionaryIterator *iterator) {
   int current_time = 0;
   int sunrise_time = 0;
   int sunset_time = 0;
-  char conditions_switch;
+  char conditions_switch = ' ';
   
   // Read tuples for data
   Tuple *temp_tuple = dict_find(iterator, TEMPERATURE);
@@ -291,7 +295,6 @@ static void update_weather(DictionaryIterator *iterator) {
     snprintf(settings.api, sizeof(settings.api), "%s", api_tuple->value->cstring);
   } 
 
-  
   //Save these settings
   APP_LOG(APP_LOG_LEVEL_ERROR, "metric_tuple %s", metric_tuple->value->cstring);
   if (metric_tuple){
@@ -323,8 +326,20 @@ static void update_weather(DictionaryIterator *iterator) {
 
   current_time = (int)time(NULL);
 
+  // APP_LOG(APP_LOG_LEVEL_ERROR, "sunrise_time - 60*30 %d", sunrise_time - (60*30));  
+  // APP_LOG(APP_LOG_LEVEL_ERROR, "current time %d", current_time );  
+  // APP_LOG(APP_LOG_LEVEL_ERROR, "sunrise_time + 60*30 %d", sunrise_time + (60*30));  
+  if ((sunrise_time - (60*30)) < current_time && current_time < (sunrise_time + (60*30))){
+    conditions_switch = 'U';
+  }
+
+  if ((sunset_time - (60*30)) < current_time && current_time < (sunset_time + (60*30))){
+    conditions_switch = 'E';
+  }
+
   //If we're day, but the conditions didn't return correctly we'll have a blank screen
-  if (sunrise_time < current_time && current_time < sunset_time){
+  if ((sunrise_time < current_time && current_time < sunset_time)
+      && (conditions_switch != 'E' && conditions_switch != 'U')){
 
     // string search conditions_buffer for key words, but only if there's a value...
     if (strlen(conditions_buffer)>0){
@@ -383,13 +398,17 @@ static void update_weather(DictionaryIterator *iterator) {
     // Trust me, I looked. I can only tell when the sky is clear or not clear by the moon 
     //    and whether I'm getting rained on
     // so we'll show the same image for all except for clear
-    
-    if ((strstr(conditions_buffer,"Clear")) != NULL){
-      APP_LOG(APP_LOG_LEVEL_ERROR, "CLEAR NIGHT"); 
-      conditions_switch = 'N';
-    } else {
-      APP_LOG(APP_LOG_LEVEL_ERROR, "NOT CLEAR NIGHT"); 
-      conditions_switch = 'Q';
+    if  (conditions_switch != 'E' && conditions_switch != 'U'){
+      if ((strstr(conditions_buffer,"Clear")) != NULL){
+        APP_LOG(APP_LOG_LEVEL_ERROR, "CLEAR NIGHT"); 
+        conditions_switch = 'N';
+      } else {
+        APP_LOG(APP_LOG_LEVEL_ERROR, "NOT CLEAR NIGHT"); 
+        conditions_switch = 'Q';
+      }
+    }
+    if (conditions_switch == ' '){
+      conditions_switch = 'X';
     }
   }
   

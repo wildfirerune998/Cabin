@@ -87,7 +87,6 @@
 	
 	var api = "";
 	var metric = "";
-	var weather = "";
 	
 	var xhrRequest = function (url, type, callback) {
 	  var xhr = new XMLHttpRequest();
@@ -109,10 +108,8 @@
 	  
 	  console.log('locationSuccess api ' + api );
 	  console.log('locationSuccess metric ' + metric); 
-	  console.log('locationSuccess weather ' + weather); 
 	
 	  // Don't bother with doing ANYTHING if they don't actually want the weather
-	  if (weather = "TRUE") {
 	    // Don't bother with anything unless you have an API key
 	    if (api) {
 	      if (metric == "TRUE"){
@@ -151,7 +148,6 @@
 	          
 	          console.log('before dictionary send api ' + api );
 	          console.log('before dictionary send metric ' + metric); 
-	          console.log('before dictionary send weather ' + weather); 
 	        
 	          // Assemble dictionary using our keys
 	          var dictionary = {
@@ -160,8 +156,7 @@
 	            "SUNRISE": sunrise,
 	            "SUNSET": sunset,
 	            "API": api,
-	            "METRIC": metric,
-	            "WEATHER": weather
+	            "METRIC": metric
 	          };
 	          // Send to Pebble
 	          Pebble.sendAppMessage(dictionary, function(e) {
@@ -181,7 +176,7 @@
 	    //console.log('END API check'); 
 	  }; //weather check
 	  console.log('END WEATHER check');
-	}
+	
 	
 	function locationError(err) {
 	  
@@ -229,7 +224,6 @@
 	
 	  var api_string;
 	  var metric_string;
-	  var weather_string;
 	  
 	  api_string = JSON.stringify(e.payload.API);
 	  if (api_string) {
@@ -243,14 +237,6 @@
 	    metric = 'TRUE';
 	  } else {
 	    metric = 'FALSE';
-	  }  
-	
-	  weather_string = JSON.stringify(e.payload.WEATHER);
-	  console.log('addEventListener json weather_string ' + weather_string)
-	  if (weather_string == '1'){
-	    weather = 'TRUE';
-	  } else {
-	    weather = 'FALSE';
 	  }  
 	
 	  //console.log('AppMessage received!');
@@ -270,7 +256,6 @@
 	  // Get the keys and values from each config item
 	  var claySettings = clay.getSettings(e.response);
 	  var metric_string;
-	  var weather_string;
 	  
 	  metric_string = claySettings[messageKeys.METRIC];
 	  if (metric_string == '1'){
@@ -282,14 +267,6 @@
 	
 	  api = claySettings[messageKeys.API];
 	  console.log('webviewclosed api ' + api);
-	
-	  weather_string = claySettings[messageKeys.WEATHER];
-	  if (weather_string == '1'){
-	    weather = 'TRUE';
-	  } else {
-	    weather = 'FALSE';
-	  }  
-	  console.log('webviewclosed weather ' + weather);
 	
 	  getWeather(); 
 	
@@ -339,7 +316,7 @@
 /* 6 */
 /***/ (function(module, exports) {
 
-	module.exports = [{"type":"section","items":[{"type":"heading","defaultValue":"Configuration"},{"type":"input","messageKey":"API","label":"Enter OpenWeather Api here:","defaultValue":""},{"type":"toggle","messageKey":"METRIC","label":"Enable Celcius","defaultValue":false},{"type":"toggle","messageKey":"WEATHER","label":"Enable Weather","defaultValue":false},{"type":"text","defaultValue":"Hiya!\n This watchface will update the background based on weather conditions and time of the day (OpenWeather key required).\n If you have any suggestions or feedback, please do not hesistate to email me at:\n Adhesiventelope@gmail.com :)"},{"type":"submit","defaultValue":"Save"}]}]
+	module.exports = [{"type":"section","items":[{"type":"heading","defaultValue":"Configuration"},{"type":"input","messageKey":"API","label":"Enter OpenWeather Api here:","defaultValue":""},{"type":"toggle","messageKey":"METRIC","label":"Enable Celcius","defaultValue":false},{"type":"text","defaultValue":"Hiya!\n This watchface will update the background based on weather conditions and time of the day (OpenWeather key required).\n If you have any suggestions or feedback, please do not hesistate to email me at:\n Adhesiventelope@gmail.com :)"},{"type":"submit","defaultValue":"Save"}]}]
 
 /***/ })
 /******/ ]);

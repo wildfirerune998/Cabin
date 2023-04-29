@@ -7,7 +7,6 @@ var clay = new Clay(clayConfig);
 
 var api = "";
 var metric = "";
-var weather = "";
 
 var xhrRequest = function (url, type, callback) {
   var xhr = new XMLHttpRequest();
@@ -29,10 +28,8 @@ function locationSuccess(pos) {
   
   console.log('locationSuccess api ' + api );
   console.log('locationSuccess metric ' + metric); 
-  console.log('locationSuccess weather ' + weather); 
 
   // Don't bother with doing ANYTHING if they don't actually want the weather
-  if (weather = "TRUE") {
     // Don't bother with anything unless you have an API key
     if (api) {
       if (metric == "TRUE"){
@@ -71,7 +68,6 @@ function locationSuccess(pos) {
           
           console.log('before dictionary send api ' + api );
           console.log('before dictionary send metric ' + metric); 
-          console.log('before dictionary send weather ' + weather); 
         
           // Assemble dictionary using our keys
           var dictionary = {
@@ -80,8 +76,7 @@ function locationSuccess(pos) {
             "SUNRISE": sunrise,
             "SUNSET": sunset,
             "API": api,
-            "METRIC": metric,
-            "WEATHER": weather
+            "METRIC": metric
           };
           // Send to Pebble
           Pebble.sendAppMessage(dictionary, function(e) {
@@ -101,7 +96,7 @@ function locationSuccess(pos) {
     //console.log('END API check'); 
   }; //weather check
   console.log('END WEATHER check');
-}
+
 
 function locationError(err) {
   
@@ -149,7 +144,6 @@ Pebble.addEventListener('appmessage', function(e) {
 
   var api_string;
   var metric_string;
-  var weather_string;
   
   api_string = JSON.stringify(e.payload.API);
   if (api_string) {
@@ -163,14 +157,6 @@ Pebble.addEventListener('appmessage', function(e) {
     metric = 'TRUE';
   } else {
     metric = 'FALSE';
-  }  
-
-  weather_string = JSON.stringify(e.payload.WEATHER);
-  console.log('addEventListener json weather_string ' + weather_string)
-  if (weather_string == '1'){
-    weather = 'TRUE';
-  } else {
-    weather = 'FALSE';
   }  
 
   //console.log('AppMessage received!');
@@ -190,7 +176,6 @@ Pebble.addEventListener('webviewclosed', function(e) {
   // Get the keys and values from each config item
   var claySettings = clay.getSettings(e.response);
   var metric_string;
-  var weather_string;
   
   metric_string = claySettings[messageKeys.METRIC];
   if (metric_string == '1'){
@@ -202,14 +187,6 @@ Pebble.addEventListener('webviewclosed', function(e) {
 
   api = claySettings[messageKeys.API];
   console.log('webviewclosed api ' + api);
-
-  weather_string = claySettings[messageKeys.WEATHER];
-  if (weather_string == '1'){
-    weather = 'TRUE';
-  } else {
-    weather = 'FALSE';
-  }  
-  console.log('webviewclosed weather ' + weather);
 
   getWeather(); 
 
