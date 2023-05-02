@@ -22,12 +22,8 @@ function locationSuccess(pos) {
   var conditions;
   var sunset;
   var sunrise;
-  console.log('in locationSuccess');
   // We will request the weather here
   // Construct URL
-  
-  console.log('locationSuccess api ' + api );
-  console.log('locationSuccess metric ' + metric); 
 
   // Don't bother with doing ANYTHING if they don't actually want the weather
     // Don't bother with anything unless you have an API key
@@ -39,12 +35,10 @@ function locationSuccess(pos) {
         var url = "http://api.openweathermap.org/data/2.5/weather?lat=" + 
             pos.coords.latitude + "&lon=" + pos.coords.longitude + "&appid=" + api + "&units=IMPERIAL";
       }
-      console.log('url to send ' + url );
       // Send request to OpenWeatherMap
       xhrRequest(url, 'GET', function(responseText) {
         // responseText contains a JSON object with weather info
         var json = JSON.parse(responseText);
-        console.log('json.cod is ' + json.cod);
 
         if (json.cod != 200){
           //We have an error, so nothing
@@ -52,22 +46,15 @@ function locationSuccess(pos) {
 
           // Temperature
           temperature = json.main.temp;
-          console.log('Temperature is ' + temperature);
 
           // Conditions
           conditions = json.weather[0].main;      
-          console.log('Conditions are ' + conditions);
         
           // sunset
           sunset = json.sys.sunset;      
-          console.log('sunset is ' + sunset);
         
           // sunrise
           sunrise = json.sys.sunrise;       
-          console.log('sunrise is ' + sunrise);
-          
-          console.log('before dictionary send api ' + api );
-          console.log('before dictionary send metric ' + metric); 
         
           // Assemble dictionary using our keys
           var dictionary = {
@@ -86,7 +73,6 @@ function locationSuccess(pos) {
               console.log('Error sending weather info to Pebble!');
             }
           );//sendAppMessge
-          console.log('END sendAppMessge'); 
 
         } // end json status check
 
@@ -95,16 +81,11 @@ function locationSuccess(pos) {
     }; // API check
     //console.log('END API check'); 
   }; //weather check
-  console.log('END WEATHER check');
-
 
 function locationError(err) {
-  
-  //console.log('in locationSuccess');
   console.log('Error requesting location!');
 }
 function getWeather() {
-  console.log('in getWeather()!');
   navigator.geolocation.getCurrentPosition(
     locationSuccess,
     locationError,
@@ -134,11 +115,7 @@ Pebble.addEventListener('ready', function(e) {
 );
 // Listen for when an AppMessage is received
 Pebble.addEventListener('appmessage', function(e) {
-
-  console.log("appmessage payload "+ JSON.stringify(e.payload));
-
   if (!e.payload){
-    console.log("Nothiing in the payload "+ JSON.stringify(e.payload));
     return;
   }
 
@@ -148,18 +125,14 @@ Pebble.addEventListener('appmessage', function(e) {
   api_string = JSON.stringify(e.payload.API);
   if (api_string) {
     api = api_string.replace(/"/g,"");
-    //console.log('addEventListener json api ' + api)
   }
   
   metric_string = JSON.stringify(e.payload.METRIC);
-  console.log('addEventListener json metric ' + metric_string)
   if (metric_string == '1'){
     metric = 'TRUE';
   } else {
     metric = 'FALSE';
   }  
-
-  //console.log('AppMessage received!');
   getWeather();
 
   }                     
@@ -183,10 +156,8 @@ Pebble.addEventListener('webviewclosed', function(e) {
   } else {
     metric = 'FALSE';
   }  
-  console.log('webviewclosed metric ' + metric);
 
   api = claySettings[messageKeys.API];
-  console.log('webviewclosed api ' + api);
 
   getWeather(); 
 

@@ -42,167 +42,265 @@
 				{
 					"file": "images/loading.png",
 					"name": "LOADING",
-					"type": "bitmap"
-				},
-				{
-					"file": "images/basic_bg.png",
-					"name": "BASIC_BG",
-					"type": "bitmap"
-				},
-				{
-					"file": "images/night.png",
-					"name": "NIGHT",
-					"type": "bitmap"
-				},
-				{
-					"file": "images/clouds-night.png",
-					"name": "CLOUDSNIGHT",
-					"type": "bitmap"
-				},
-				{
-					"file": "images/day.png",
-					"name": "DAY",
-					"type": "bitmap"
-				},
-				{
-					"file": "images/rain.png",
-					"name": "RAIN",
-					"type": "bitmap"
-				},
-				{
-					"file": "images/snow.png",
-					"name": "SNOW",
-					"type": "bitmap"
-				},
-				{
-					"file": "images/clouds.png",
-					"name": "CLOUDS",
-					"type": "bitmap"
-				},
-				{
-					"file": "images/clouds_bw.png",
-					"name": "CLOUDS_BW",
-					"type": "bitmap"
-				},
-				{
-					"file": "images/basic_bg_round.png",
-					"name": "BASIC_BG_ROUND",
-					"type": "bitmap"
+					"type": "bitmap",
+					"targetPlatforms": [
+						"aplite",
+						"basalt",
+						"diorite"
+					]
 				},
 				{
 					"file": "images/loading_round.png",
 					"name": "LOADING_ROUND",
-					"type": "bitmap"
+					"type": "bitmap",
+					"targetPlatforms": [
+						"chalk"
+					]
 				},
 				{
-					"file": "images/night_round.png",
-					"name": "NIGHT_ROUND",
-					"type": "bitmap"
-				},
-				{
-					"file": "images/night_round.png",
-					"name": "NIGHT_BW",
-					"type": "bitmap"
-				},
-				{
-					"file": "images/clouds-night_round.png",
-					"name": "CLOUDSNIGHT_ROUND",
-					"type": "bitmap"
-				},
-				{
-					"file": "images/clouds-night_bw.png",
-					"name": "CLOUDSNIGHT_BW",
-					"type": "bitmap"
-				},
-				{
-					"file": "images/day_round.png",
-					"name": "DAY_ROUND",
-					"type": "bitmap"
-				},
-				{
-					"file": "images/day_round.png",
-					"name": "DAY_BW",
-					"type": "bitmap"
+					"file": "images/rain.png",
+					"name": "RAIN",
+					"type": "bitmap",
+					"targetPlatforms": [
+						"aplite",
+						"basalt",
+						"diorite"
+					]
 				},
 				{
 					"file": "images/rain_round.png",
 					"name": "RAIN_ROUND",
-					"type": "bitmap"
-				},
-				{
-					"file": "images/snow_round.png",
-					"name": "SNOW_ROUND",
-					"type": "bitmap"
-				},
-				{
-					"file": "images/snow_round.png",
-					"name": "SNOW_BW",
-					"type": "bitmap"
-				},
-				{
-					"file": "images/clouds_round.png",
-					"name": "CLOUDS_ROUND",
-					"type": "bitmap"
+					"type": "bitmap",
+					"targetPlatforms": [
+						"chalk"
+					]
 				},
 				{
 					"file": "images/thunderstorms.png",
 					"name": "THUNDERSTORMS",
-					"type": "bitmap"
+					"type": "bitmap",
+					"targetPlatforms": [
+						"aplite",
+						"basalt",
+						"diorite"
+					]
 				},
 				{
 					"file": "images/thunderstorms_round.png",
 					"name": "THUNDERSTORMS_ROUND",
-					"type": "bitmap"
+					"type": "bitmap",
+					"targetPlatforms": [
+						"chalk"
+					]
 				},
 				{
 					"file": "images/tornado.png",
 					"name": "TORNADO",
-					"type": "bitmap"
+					"type": "bitmap",
+					"targetPlatforms": [
+						"aplite",
+						"basalt",
+						"diorite"
+					]
 				},
 				{
 					"file": "images/tornado_round.png",
 					"name": "TORNADO_ROUND",
-					"type": "bitmap"
+					"type": "bitmap",
+					"targetPlatforms": [
+						"chalk"
+					]
+				},
+				{
+					"file": "images/night.png",
+					"name": "NIGHT",
+					"type": "bitmap",
+					"targetPlatforms": [
+						"basalt"
+					]
+				},
+				{
+					"file": "images/night_round.png",
+					"name": "NIGHT_ROUND",
+					"type": "bitmap",
+					"targetPlatforms": [
+						"chalk"
+					]
+				},
+				{
+					"file": "images/night_bw.png",
+					"name": "NIGHT_BW",
+					"type": "bitmap",
+					"targetPlatforms": [
+						"aplite",
+						"diorite"
+					]
+				},
+				{
+					"file": "images/clouds-night.png",
+					"name": "CLOUDSNIGHT",
+					"type": "bitmap",
+					"targetPlatforms": [
+						"basalt"
+					]
+				},
+				{
+					"file": "images/clouds-night_round.png",
+					"name": "CLOUDSNIGHT_ROUND",
+					"type": "bitmap",
+					"targetPlatforms": [
+						"chalk"
+					]
+				},
+				{
+					"file": "images/clouds-night_bw.png",
+					"name": "CLOUDSNIGHT_BW",
+					"type": "bitmap",
+					"targetPlatforms": [
+						"aplite",
+						"diorite"
+					]
+				},
+				{
+					"file": "images/snow.png",
+					"name": "SNOW",
+					"type": "bitmap",
+					"targetPlatforms": [
+						"basalt"
+					]
+				},
+				{
+					"file": "images/snow_round.png",
+					"name": "SNOW_ROUND",
+					"type": "bitmap",
+					"targetPlatforms": [
+						"chalk"
+					]
+				},
+				{
+					"file": "images/snow_bw.png",
+					"name": "SNOW_BW",
+					"type": "bitmap",
+					"targetPlatforms": [
+						"aplite",
+						"diorite"
+					]
+				},
+				{
+					"file": "images/clouds.png",
+					"name": "CLOUDS",
+					"type": "bitmap",
+					"targetPlatforms": [
+						"basalt"
+					]
+				},
+				{
+					"file": "images/clouds_round.png",
+					"name": "CLOUDS_ROUND",
+					"type": "bitmap",
+					"targetPlatforms": [
+						"chalk"
+					]
+				},
+				{
+					"file": "images/clouds_bw.png",
+					"name": "CLOUDS_BW",
+					"type": "bitmap",
+					"targetPlatforms": [
+						"aplite",
+						"diorite"
+					]
 				},
 				{
 					"file": "images/haze.png",
 					"name": "HAZE",
-					"type": "bitmap"
+					"type": "bitmap",
+					"targetPlatforms": [
+						"basalt"
+					]
 				},
 				{
 					"file": "images/haze_round.png",
 					"name": "HAZE_ROUND",
-					"type": "bitmap"
+					"type": "bitmap",
+					"targetPlatforms": [
+						"chalk"
+					]
 				},
 				{
 				  "file": "images/haze_bw.png",
 				  "name": "HAZE_BW",
-				  "type": "bitmap"
+				  "type": "bitmap",
+				  "targetPlatforms": [
+					  "aplite",
+					  "diorite"
+				  ]
 				},
 				{
 				  "file": "images/sunset.png",
 				  "name": "SUNSET",
-				  "type": "bitmap"
+				  "type": "bitmap",
+				  "targetPlatforms": [
+					  "basalt"
+				  ]
 				},
 				{
 				  "file": "images/sunset_round.png",
 				  "name": "SUNSET_ROUND",
-				  "type": "bitmap"
+				  "type": "bitmap",
+				  "targetPlatforms": [
+					  "chalk"
+				  ]
 				},
 				{
 				  "file": "images/sunset_bw.png",
 				  "name": "SUNSET_BW",
-				  "type": "bitmap"
+				  "type": "bitmap",
+				  "targetPlatforms": [
+					  "aplite",
+					  "diorite"
+				  ]
+				},
+				{
+					"file": "images/day.png",
+					"name": "DAY",
+					"type": "bitmap",
+					"targetPlatforms": [
+						"basalt"
+					]
+				},
+				{
+					"file": "images/day_round.png",
+					"name": "DAY_ROUND",
+					"type": "bitmap",
+					"targetPlatforms": [
+						"chalk"
+					]
+				},
+				{
+					"file": "images/day_bw.png",
+					"name": "DAY_BW",
+					"type": "bitmap",
+					"targetPlatforms": [
+						"aplite",
+						"diorite"
+					]
 				},
 				{
 				  "file": "images/sunrise.png",
 				  "name": "SUNRISE",
-				  "type": "bitmap"
+				  "type": "bitmap",
+				  "targetPlatforms": [
+					  "basalt"
+				  ]
 				},
 				{
 				  "file": "images/sunrise_round.png",
 				  "name": "SUNRISE_ROUND",
-				  "type": "bitmap"
+				  "type": "bitmap",
+				  "targetPlatforms": [
+					  "chalk"
+				  ]
 				}
 			]
 		}

@@ -39,14 +39,10 @@ int tick_counter;
 static void default_settings() {
   snprintf(settings.metric, sizeof(settings.metric), "%s", "FALSE");
   snprintf(settings.api, sizeof(settings.api), "%s", "");
-  APP_LOG(APP_LOG_LEVEL_ERROR, "default_settings settings.metric: %s", settings.metric);
-  APP_LOG(APP_LOG_LEVEL_ERROR, "default_settings settings.api: %s", settings.api);
 }
 
 // Save the settings to persistent storage
 static void save_settings() {
-  APP_LOG(APP_LOG_LEVEL_ERROR, "save_settings settings.metric: %s", settings.metric);
-  APP_LOG(APP_LOG_LEVEL_ERROR, "save_settings settings.api: %s", settings.api);
   persist_write_data(SETTINGS_KEY, &settings, sizeof(settings));
 }
 
@@ -54,12 +50,9 @@ static void save_settings() {
 static void get_settings() {
   default_settings();
   persist_read_data(SETTINGS_KEY, &settings, sizeof(settings));
-  APP_LOG(APP_LOG_LEVEL_ERROR, "get_settings settings.metric: %s", settings.metric);
-  APP_LOG(APP_LOG_LEVEL_ERROR, "get_settings settings.api: %s", settings.api);
 }
 static void send_settings_update_weather(){
 
-  APP_LOG(APP_LOG_LEVEL_INFO, "in send_settings_update_weather");
   // Begin dictionary
   DictionaryIterator *iter;
 
@@ -67,8 +60,6 @@ static void send_settings_update_weather(){
   AppMessageResult result = app_message_outbox_begin(&iter);
 
   if(result == APP_MSG_OK) {
-
-    //APP_LOG(APP_LOG_LEVEL_ERROR, "result == APP_MSG_OK");
 
     // This is to pull the settings info from cache and push it to the index.js 
     dict_write_cstring(iter, MESSAGE_KEY_API, settings.api);
@@ -108,7 +99,6 @@ static void accel_tap_handler(AccelAxisType axis, int32_t direction) {
   if (date){
     // This is the second flick
     text_layer_set_text(s_weather_layer, weather_layer_buffer);
-    APP_LOG(APP_LOG_LEVEL_ERROR, "weather_layer_buffer second flick %s", weather_layer_buffer); 
     date = FALSE;
   } else{
     static char tmp_date[6];
@@ -126,16 +116,13 @@ static void accel_tap_handler(AccelAxisType axis, int32_t direction) {
     }
   
     text_layer_set_text(s_weather_layer, tmp_date);
-    APP_LOG(APP_LOG_LEVEL_ERROR, "tmp_date %s", tmp_date); 
     date = TRUE;
   }
   
 }
 static void update_bg(char Weather){
 
-  //Weather = 'F'; //MANUAL SET for testing various conditions
-  APP_LOG(APP_LOG_LEVEL_ERROR, "update_bg Weather %c", Weather);
-  PBL_IF_COLOR_ELSE(APP_LOG(APP_LOG_LEVEL_ERROR, "COLOR"), APP_LOG(APP_LOG_LEVEL_ERROR, "BW"));
+  Weather = 'F'; //MANUAL SET for testing various conditions
   gbitmap_destroy(s_bitmap);
 
   switch(Weather){    
@@ -189,7 +176,7 @@ static void update_bg(char Weather){
     case 'U' : //SUNRISE
       s_bitmap = PBL_IF_COLOR_ELSE(PBL_IF_ROUND_ELSE(gbitmap_create_with_resource(RESOURCE_ID_SUNRISE_ROUND), 
                                                      gbitmap_create_with_resource(RESOURCE_ID_SUNRISE)), 
-                                   gbitmap_create_with_resource(RESOURCE_ID_TORNADO));
+                                   gbitmap_create_with_resource(RESOURCE_ID_SUNSET_BW));
       break;
     case 'E' : //SUNSET
       s_bitmap = PBL_IF_COLOR_ELSE(PBL_IF_ROUND_ELSE(gbitmap_create_with_resource(RESOURCE_ID_SUNSET_ROUND), 
@@ -197,8 +184,8 @@ static void update_bg(char Weather){
                                    gbitmap_create_with_resource(RESOURCE_ID_SUNSET_BW));
       break;
     default : //DEFAULT
-      s_bitmap = PBL_IF_ROUND_ELSE(gbitmap_create_with_resource(RESOURCE_ID_BASIC_BG_ROUND), 
-                                   gbitmap_create_with_resource(RESOURCE_ID_BASIC_BG));
+      s_bitmap = PBL_IF_ROUND_ELSE(gbitmap_create_with_resource(RESOURCE_ID_LOADING_ROUND), 
+                                   gbitmap_create_with_resource(RESOURCE_ID_LOADING));
         
   }
   bitmap_layer_set_bitmap(s_bitmap_layer, s_bitmap);
@@ -211,11 +198,11 @@ static void main_window_load(Window *window) {
   
   //////////////BASIC LAYER////////////////////
   // Create the canvas Layer
-  s_bitmap = gbitmap_create_with_resource(RESOURCE_ID_BASIC_BG);
+  s_bitmap = PBL_IF_ROUND_ELSE(gbitmap_create_with_resource(RESOURCE_ID_LOADING_ROUND), 
+                               gbitmap_create_with_resource(RESOURCE_ID_LOADING));
   s_bitmap_layer = bitmap_layer_create(GRect(0,PBL_IF_ROUND_ELSE(0, 0), bounds.size.w, bounds.size.h));
   bitmap_layer_set_compositing_mode(s_bitmap_layer, GCompOpSet);
    
-  APP_LOG(APP_LOG_LEVEL_ERROR, "In main_window_load");
   update_bg('L'); //DEFAULT LOADING screen at first
   layer_add_child(window_get_root_layer(window), bitmap_layer_get_layer(s_bitmap_layer));
 
@@ -264,9 +251,6 @@ static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
  
   // Get weather update every 30 minutes
   if((tick_time->tm_min % 30 == 0)) {
-
-    APP_LOG(APP_LOG_LEVEL_INFO, "tick_handler 30min");
-
     send_settings_update_weather();
   }
 }
@@ -296,11 +280,9 @@ static void update_weather(DictionaryIterator *iterator) {
   } 
 
   //Save these settings
-  APP_LOG(APP_LOG_LEVEL_ERROR, "metric_tuple %s", metric_tuple->value->cstring);
   if (metric_tuple){
     snprintf(settings.metric, sizeof(settings.metric), "%s", metric_tuple->value->cstring);
-  } 
-  APP_LOG(APP_LOG_LEVEL_ERROR, "settings.metric %s", settings.metric);
+  }
 
   // We're done looking at the settings returned. let's save it for future use.
   //HEL TO DO, does this get over written when nothing is returned for those values?
@@ -311,8 +293,7 @@ static void update_weather(DictionaryIterator *iterator) {
   }
 
   if (conditions_tuple) {
-    snprintf(conditions_buffer, sizeof(conditions_buffer), "%s", conditions_tuple->value->cstring);
-    APP_LOG(APP_LOG_LEVEL_ERROR, "inbox_received_callback conditions_buffer %s", conditions_buffer);  
+    snprintf(conditions_buffer, sizeof(conditions_buffer), "%s", conditions_tuple->value->cstring); 
   }
 
   if (sunrise_tuple) {
@@ -326,9 +307,6 @@ static void update_weather(DictionaryIterator *iterator) {
 
   current_time = (int)time(NULL);
 
-  // APP_LOG(APP_LOG_LEVEL_ERROR, "sunrise_time - 60*30 %d", sunrise_time - (60*30));  
-  // APP_LOG(APP_LOG_LEVEL_ERROR, "current time %d", current_time );  
-  // APP_LOG(APP_LOG_LEVEL_ERROR, "sunrise_time + 60*30 %d", sunrise_time + (60*30));  
   if ((sunrise_time - (60*30)) < current_time && current_time < (sunrise_time + (60*30))){
     conditions_switch = 'U';
   }
@@ -400,10 +378,8 @@ static void update_weather(DictionaryIterator *iterator) {
     // so we'll show the same image for all except for clear
     if  (conditions_switch != 'E' && conditions_switch != 'U'){
       if ((strstr(conditions_buffer,"Clear")) != NULL){
-        APP_LOG(APP_LOG_LEVEL_ERROR, "CLEAR NIGHT"); 
         conditions_switch = 'N';
       } else {
-        APP_LOG(APP_LOG_LEVEL_ERROR, "NOT CLEAR NIGHT"); 
         conditions_switch = 'Q';
       }
     }
@@ -416,10 +392,8 @@ static void update_weather(DictionaryIterator *iterator) {
 
   if (strstr(settings.metric,"TRUE") != NULL) {
     snprintf(weather_layer_buffer, sizeof(weather_layer_buffer), "%sc", temperature_buffer);
-    APP_LOG(APP_LOG_LEVEL_ERROR, "weather_layer_buffer %s", weather_layer_buffer); 
   } else {
     snprintf(weather_layer_buffer, sizeof(weather_layer_buffer), "%sf", temperature_buffer);
-    APP_LOG(APP_LOG_LEVEL_ERROR, "weather_layer_buffer %s", weather_layer_buffer); 
   }
 
   text_layer_set_text(s_weather_layer, weather_layer_buffer);
@@ -431,7 +405,6 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
 
   if (ready_tuple) {
     
-    //APP_LOG(APP_LOG_LEVEL_ERROR, "We got the ready signal, give it the api info");
     // This is just a ready signal, We'll go back to the JS program
     // and give it the API information
     send_settings_update_weather();
