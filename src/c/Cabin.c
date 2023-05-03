@@ -122,7 +122,7 @@ static void accel_tap_handler(AccelAxisType axis, int32_t direction) {
 }
 static void update_bg(char Weather){
 
-  Weather = 'F'; //MANUAL SET for testing various conditions
+  //Weather = 'F'; //MANUAL SET for testing various conditions
   gbitmap_destroy(s_bitmap);
 
   switch(Weather){    
