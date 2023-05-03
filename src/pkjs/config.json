@@ -18,12 +18,6 @@
         "label": "Enable Celcius",
         "defaultValue": false
       },
-      { 
-        "type": "toggle", 
-        "messageKey": "WEATHER",
-        "label": "Enable Weather",
-        "defaultValue": false
-      },
       {
         "type": "text",
         "defaultValue": "Hiya!\n This watchface will update the background based on weather conditions and time of the day (OpenWeather key required).\n If you have any suggestions or feedback, please do not hesistate to email me at:\n Adhesiventelope@gmail.com :)"
