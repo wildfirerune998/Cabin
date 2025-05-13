@@ -1,7 +1,7 @@
 {
 	"name": "Cabin",
 	"author": "Hel",
-	"version": "3.0.0",
+	"version": "3.1.0",
 	"keywords": [
 		"pebble-app"
 	],
@@ -24,14 +24,12 @@
 			"watchface": true
 		},
 		"messageKeys": {
-			"TEMPERATURE": 0,
-			"CONDITIONS": 1,
-			"SUNRISE": 2,
-			"SUNSET": 3,
-			"API": 4,
+			"READY": 1,
+			"TEMPERATURE": 2,
+			"WEATHERCODE": 3,
+			"ISDAY": 4,
 			"METRIC": 5,
-			"READY": 6,
-			"WEATHER": 7
+			"RANONCE": 6
 		},
 		"capabilities": [
 			"location",
@@ -88,24 +86,6 @@
 				{
 					"file": "images/thunderstorms_round.png",
 					"name": "THUNDERSTORMS_ROUND",
-					"type": "bitmap",
-					"targetPlatforms": [
-						"chalk"
-					]
-				},
-				{
-					"file": "images/tornado.png",
-					"name": "TORNADO",
-					"type": "bitmap",
-					"targetPlatforms": [
-						"aplite",
-						"basalt",
-						"diorite"
-					]
-				},
-				{
-					"file": "images/tornado_round.png",
-					"name": "TORNADO_ROUND",
 					"type": "bitmap",
 					"targetPlatforms": [
 						"chalk"
@@ -228,38 +208,13 @@
 					]
 				},
 				{
-				  "file": "images/haze_bw.png",
-				  "name": "HAZE_BW",
-				  "type": "bitmap",
-				  "targetPlatforms": [
-					  "aplite",
-					  "diorite"
-				  ]
-				},
-				{
-				  "file": "images/sunset.png",
-				  "name": "SUNSET",
-				  "type": "bitmap",
-				  "targetPlatforms": [
-					  "basalt"
-				  ]
-				},
-				{
-				  "file": "images/sunset_round.png",
-				  "name": "SUNSET_ROUND",
-				  "type": "bitmap",
-				  "targetPlatforms": [
-					  "chalk"
-				  ]
-				},
-				{
-				  "file": "images/sunset_bw.png",
-				  "name": "SUNSET_BW",
-				  "type": "bitmap",
-				  "targetPlatforms": [
-					  "aplite",
-					  "diorite"
-				  ]
+					"file": "images/haze_bw.png",
+					"name": "HAZE_BW",
+					"type": "bitmap",
+					"targetPlatforms": [
+						"aplite",
+						"diorite"
+					]
 				},
 				{
 					"file": "images/day.png",
@@ -285,22 +240,6 @@
 						"aplite",
 						"diorite"
 					]
-				},
-				{
-				  "file": "images/sunrise.png",
-				  "name": "SUNRISE",
-				  "type": "bitmap",
-				  "targetPlatforms": [
-					  "basalt"
-				  ]
-				},
-				{
-				  "file": "images/sunrise_round.png",
-				  "name": "SUNRISE_ROUND",
-				  "type": "bitmap",
-				  "targetPlatforms": [
-					  "chalk"
-				  ]
 				}
 			]
 		}

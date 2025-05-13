@@ -5,8 +5,11 @@ var clayConfig = require('./config.json');
 // Initialize Clay
 var clay = new Clay(clayConfig);
 
-var api = "";
-var metric = "";
+var weatherCode = 100;
+var isDay = 5;
+var metric = 100;
+var temperature = 999;
+var ranOnce = 0;
 
 var xhrRequest = function (url, type, callback) {
   var xhr = new XMLHttpRequest();
@@ -18,52 +21,55 @@ var xhrRequest = function (url, type, callback) {
 };
 
 function locationSuccess(pos) {
-  var temperature;
-  var conditions;
-  var sunset;
-  var sunrise;
   // We will request the weather here
   // Construct URL
 
-  // Don't bother with doing ANYTHING if they don't actually want the weather
-    // Don't bother with anything unless you have an API key
-    if (api) {
-      if (metric == "TRUE"){
-        var url = "http://api.openweathermap.org/data/2.5/weather?lat=" + 
-            pos.coords.latitude + "&lon=" + pos.coords.longitude + "&appid=" + api + "&units=METRIC";
-      } else {
-        var url = "http://api.openweathermap.org/data/2.5/weather?lat=" + 
-            pos.coords.latitude + "&lon=" + pos.coords.longitude + "&appid=" + api + "&units=IMPERIAL";
-      }
+     if (metric == 1){
+        var url = "http://api.open-meteo.com/v1/forecast?latitude=" + 
+            pos.coords.latitude + "&longitude=" + pos.coords.longitude + "&current=weather_code,is_day,temperature_2m";
+     } else {
+      var url = "http://api.open-meteo.com/v1/forecast?latitude=" + 
+          pos.coords.latitude + "&longitude=" + pos.coords.longitude + "&temperature_unit=fahrenheit&current=weather_code,is_day,temperature_2m";
+     }
       // Send request to OpenWeatherMap
       xhrRequest(url, 'GET', function(responseText) {
         // responseText contains a JSON object with weather info
         var json = JSON.parse(responseText);
 
-        if (json.cod != 200){
-          //We have an error, so nothing
-        } else {
+        if (json){
 
-          // Temperature
-          temperature = json.main.temp;
+          weatherCode = 100;
+          isDay = 5;
+          metric = 100;
+          temperature = 999;
+          ranOnce = 0;
 
           // Conditions
-          conditions = json.weather[0].main;      
+          var lcl_weatherCode = json.current.weather_code;      
+          weatherCode = lcl_weatherCode;
         
-          // sunset
-          sunset = json.sys.sunset;      
-        
-          // sunrise
-          sunrise = json.sys.sunrise;       
+          // isDay
+          var lcl_isDay = json.current.is_day;      
+          if (lcl_isDay == 0 || lcl_isDay == 1){
+            isDay = lcl_isDay;
+          }
+
+          // temperature
+          var lcl_temperature = json.current.temperature_2m;      
+          temperature = lcl_temperature;
+          
+        console.log("HELLO");
+        console.log(temperature);
+        ranOnce = 1;
+        console.log(ranOnce);
         
           // Assemble dictionary using our keys
           var dictionary = {
             "TEMPERATURE": temperature,
-            "CONDITIONS": conditions,
-            "SUNRISE": sunrise,
-            "SUNSET": sunset,
-            "API": api,
-            "METRIC": metric
+            "WEATHERCODE": weatherCode,
+            "ISDAY": isDay,
+            "METRIC": metric,
+            "RANONCE": ranOnce
           };
           // Send to Pebble
           Pebble.sendAppMessage(dictionary, function(e) {
@@ -73,13 +79,10 @@ function locationSuccess(pos) {
               console.log('Error sending weather info to Pebble!');
             }
           );//sendAppMessge
-
         } // end json status check
 
       });//xhr request
-      //console.log('END xhr request'); 
-    }; // API check
-    //console.log('END API check'); 
+      //console.log('END xhr request');  
   }; //weather check
 
 function locationError(err) {
@@ -119,20 +122,40 @@ Pebble.addEventListener('appmessage', function(e) {
     return;
   }
 
-  var api_string;
-  var metric_string;
-  
-  api_string = JSON.stringify(e.payload.API);
-  if (api_string) {
-    api = api_string.replace(/"/g,"");
+  console.log(JSON.stringify(e.payload));
+    
+  var weatherCode_string;
+  weatherCode_string = JSON.stringify(e.payload.WEATHERCODE);
+  if (weatherCode_string) {
+    weatherCode = weatherCode_string.replace(/"/g,"");
+  }
+
+  var isDay_string;
+  isDay_string = JSON.stringify(e.payload.ISDAY);
+  if (isDay_string) {
+    isDay = isDay_string.replace(/"/g,"");
+  }
+
+  var temperature_string;
+  temperature_string = JSON.stringify(e.payload.TEMPERATURE);
+  if (temperature_string) {
+    temperature = temperature_string.replace(/"/g,"");
   }
   
+  var metric_string;
   metric_string = JSON.stringify(e.payload.METRIC);
   if (metric_string == '1'){
-    metric = 'TRUE';
+    metric = 1;
   } else {
-    metric = 'FALSE';
-  }  
+    metric = 0;
+  }
+
+  var ranOnce_string;
+  ranOnce_string = JSON.stringify(e.payload.RANONCE);
+  if (ranOnce_string) {
+    ranOnce = ranOnce_string.replace(/"/g,"");
+  }
+  
   getWeather();
 
   }                     
@@ -152,12 +175,15 @@ Pebble.addEventListener('webviewclosed', function(e) {
   
   metric_string = claySettings[messageKeys.METRIC];
   if (metric_string == '1'){
-    metric = 'TRUE';
+    metric = 1;
   } else {
-    metric = 'FALSE';
+    metric = 0;
   }  
 
-  api = claySettings[messageKeys.API];
+  weatherCode = claySettings[messageKeys.WEATHERCODE];
+  isDay = claySettings[messageKeys.ISDAY];
+  temperature = claySettings[messageKeys.TEMPERATURE];
+  ranOnce = claySettings[messageKeys.RANONCE];
 
   getWeather(); 
 
