@@ -179,12 +179,11 @@ static void update_weather(DictionaryIterator *iterator, bool update_background_
   if (ranOnce == 0 && settings.ranOnce == 1){
     ranOnce = settings.ranOnce;
   }
-  
+
   if (!ranOnce){
     // APP_LOG(APP_LOG_LEVEL_INFO, "AAAAAAAAAAAAAAAAAAAAAHHHHHHHHHHHHHHHHHH");
     return;
   }
-
   // APP_LOG(APP_LOG_LEVEL_INFO, "update_weather settings.isDay %d", settings.isDay);
   // APP_LOG(APP_LOG_LEVEL_INFO, "update_weather settings.weatherCode %d", settings.weatherCode);
   // APP_LOG(APP_LOG_LEVEL_INFO, "update_weather settings.metric %d", settings.metric);
